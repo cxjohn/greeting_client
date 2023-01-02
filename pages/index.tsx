@@ -55,7 +55,7 @@ export default function Home() {
               >
                 Make your own{" "}
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">
-                  greeting
+                  greeting card
                 </span>
               </h1>
               <div className="max-w-3xl mx-auto">
@@ -63,9 +63,7 @@ export default function Home() {
                   className="text-xl text-gray-600 mb-8"
                   data-aos="zoom-y-out"
                   data-aos-delay="150"
-                >
-                  Enter your own greeting and create your own greeting card
-                </p>
+                ></p>
                 <div
                   className="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center"
                   data-aos="zoom-y-out"

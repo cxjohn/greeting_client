@@ -51,7 +51,10 @@ export default function Home() {
     <>
       <Head>
         <title>Greetly | Greeting Card Generator</title>
-        <meta name="description" content="Make your own custom greeting card" />
+        <meta
+          name="description"
+          content="Make a totally unique, beautiful greeting card"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

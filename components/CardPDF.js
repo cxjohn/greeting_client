@@ -18,8 +18,8 @@ const styles = StyleSheet.create({
     height: "506px",
   },
   image: {
-    height: "100%",
-    width: "100%",
+    height: 512,
+    width: 512,
   },
   text: {
     flex: 1,
@@ -32,19 +32,19 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-export default function BasicDocument({ value }) {
+export default function BasicDocument({ text, image }) {
   return (
     <PDFViewer style={styles.viewer}>
       <Document>
-        <Page size="A4" orientation="landscape" style={styles.page}>
-          <View style={{ flex: 1 }}>
-            <Image style={styles.image} src="/cover.png" />
-          </View>
+        <Page size={[512, 1024]} orientation="landscape" style={styles.page}>
           <View style={styles.text}>
             <Text>Made with love</Text>
           </View>
+          <View style={{ flex: 1 }}>
+            <Image style={styles.image} src={image} />
+          </View>
         </Page>
-        <Page size="A4" orientation="landscape" style={styles.page}>
+        <Page size={[512, 1024]} orientation="landscape" style={styles.page}>
           <View style={{ flex: 1 }}></View>
           <View style={styles.text}>
             <Text
@@ -52,7 +52,7 @@ export default function BasicDocument({ value }) {
                 margin: "48px",
               }}
             >
-              {value}
+              {text}
             </Text>
           </View>
         </Page>

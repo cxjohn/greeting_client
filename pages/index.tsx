@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Head from "next/head";
 import CardPDF from "../components/CardPDF";
 
 export default function Home() {
+  const outsideRef = useRef();
+  const insideRef = useRef();
   const [data, setData] = useState({ text: "" });
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
@@ -46,6 +50,45 @@ export default function Home() {
 
     fetchData();
   }, [search]);
+
+  const handleDownloadCardOutside = async () => {
+    const element = outsideRef.current;
+    // @ts-ignore
+    const canvas = await html2canvas(element);
+
+    const data = canvas.toDataURL("image/jpg");
+    const link = document.createElement("a");
+
+    if (typeof link.download === "string") {
+      link.href = data;
+      link.download = "cover.jpg";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      window.open(data);
+    }
+  };
+
+  const handleDownloadCardInside = async () => {
+    const element = insideRef.current;
+    // @ts-ignore
+    const canvas = await html2canvas(element);
+    const data = canvas.toDataURL("image/jpg");
+    const link = document.createElement("a");
+
+    if (typeof link.download === "string") {
+      link.href = data;
+      link.download = "inside.jpg";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      window.open(data);
+    }
+  };
 
   return (
     <>
@@ -93,7 +136,6 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="pt-16 pb-12 md:py-20">
             <div className="text-center pb-12 md:pb-16">
-              {result && <img src={result} />}
               <h1
                 className="text-5xl md:text-9xl font-extrabold leading-tighter tracking-tighter mb-4"
                 data-aos="zoom-y-out"
@@ -142,7 +184,57 @@ export default function Home() {
               <div className="flex flex-col justify-center">
                 <div className="mx-auto">
                   {data.text ? (
-                    <CardPDF text={data.text} image={result} />
+                    <>
+                      <div className="shadow-lg mb-2">
+                        <div
+                          //@ts-ignore
+                          ref={outsideRef}
+                        >
+                          <div className="w-[900px] h-[450px] bg-white  ">
+                            <div className="flex h-full">
+                              {" "}
+                              <p className="flex flex-1 text-center h-full justify-center items-center">
+                                Made with ♥
+                              </p>{" "}
+                              <div className="flex-1">
+                                <img src={result} />
+                              </div>
+                            </div>{" "}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-full flex justify-center">
+                        <button
+                          className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-6 "
+                          type="button"
+                          onClick={handleDownloadCardOutside}
+                        >
+                          Download
+                        </button>
+                      </div>
+                      <div
+                        //@ts-ignore
+                        ref={insideRef}
+                        className="w-[900px] h-[450px] bg-white  shadow-lg mb-2"
+                      >
+                        <div className="flex h-full">
+                          {" "}
+                          <div className="flex-1"></div>
+                          <p className="flex flex-1 text-center h-full justify-center items-center mx-12">
+                            {data.text}
+                          </p>{" "}
+                        </div>{" "}
+                      </div>
+                      <div className="w-full flex justify-center">
+                        <button
+                          className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-6 "
+                          type="button"
+                          onClick={handleDownloadCardInside}
+                        >
+                          Download
+                        </button>
+                      </div>
+                    </>
                   ) : isLoading ? (
                     <SkeletonTheme baseColor="#3b82f6" highlightColor="#2dd4bf">
                       <Skeleton height="506px" width="900px" />

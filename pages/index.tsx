@@ -212,18 +212,21 @@ export default function Home() {
                           Download
                         </button>
                       </div>
-                      <div
-                        //@ts-ignore
-                        ref={insideRef}
-                        className="w-[900px] h-[450px] bg-white  shadow-lg mb-2"
-                      >
-                        <div className="flex h-full">
-                          {" "}
-                          <div className="flex-1"></div>
-                          <p className="flex flex-1 text-center h-full justify-center items-center mx-12">
-                            {data.text}
-                          </p>{" "}
-                        </div>{" "}
+                      <div className="shadow-lg mb-2">
+                        <div
+                          //@ts-ignore
+                          ref={insideRef}
+                        >
+                          <div className="w-[900px] h-[450px] bg-white">
+                            <div className="flex h-full">
+                              {" "}
+                              <div className="flex-1"></div>
+                              <p className="flex flex-1 text-center h-full justify-center items-center mx-12">
+                                {data.text}
+                              </p>{" "}
+                            </div>{" "}
+                          </div>
+                        </div>
                       </div>
                       <div className="w-full flex justify-center">
                         <button

@@ -54,7 +54,7 @@ export default function Home() {
   const handleDownloadCardOutside = async () => {
     const element = outsideRef.current;
     // @ts-ignore
-    const canvas = await html2canvas(element);
+    const canvas = await html2canvas(element, {allowTaint: true, useCORS: true});
 
     const data = canvas.toDataURL("image/jpg");
     const link = document.createElement("a");
@@ -74,7 +74,7 @@ export default function Home() {
   const handleDownloadCardInside = async () => {
     const element = insideRef.current;
     // @ts-ignore
-    const canvas = await html2canvas(element);
+    const canvas = await html2canvas(element, {allowTaint: true, useCORS: true});
     const data = canvas.toDataURL("image/jpg");
     const link = document.createElement("a");
 

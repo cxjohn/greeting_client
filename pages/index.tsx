@@ -5,6 +5,7 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Head from "next/head";
 import CardPDF from "../components/CardPDF";
+import axios from "axios";
 
 export default function Home() {
   const outsideRef = useRef();
@@ -14,36 +15,94 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState("");
+  const [imageState, setImageState] = useState("");
+
+  const [prediction, setPrediction] = useState(null);
+  const [error, setError] = useState(null);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (search) {
+  //       setIsLoading(true);
+  //       const result = (
+  //         await Promise.all([
+  //           fetch(`/api/dalle/text`, {
+  //             body: JSON.stringify({
+  //               name: search,
+  //             }),
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //             method: "POST",
+  //           }),
+  //           fetch("/api/dalle/image", {
+  //             method: "POST",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //             body: JSON.stringify({
+  //               name: search,
+  //             }),
+  //           }),
+  //         ])
+  //       ).map((r) => r.json());
+  //       const [result1, result2] = await Promise.all(result);
+  //       setData(result1);
+  //       setResult(result2.result);
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [search]);
 
   useEffect(() => {
     const fetchData = async () => {
       if (search) {
         setIsLoading(true);
-        const result = (
-          await Promise.all([
-            fetch(`/api/text`, {
-              body: JSON.stringify({
-                name: search,
-              }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-              method: "POST",
-            }),
-            fetch("/api/image", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                name: search,
-              }),
-            }),
-          ])
-        ).map((r) => r.json());
-        const [result1, result2] = await Promise.all(result);
-        setData(result1);
-        setResult(result2.result);
+        const res = await fetch(`/api/dalle/text`, {
+          body: JSON.stringify({
+            name: search,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+        });
+        const data = await res.json();
+        setData(data);
+
+        const sleep = (ms: any) => new Promise((r) => setTimeout(r, ms));
+        const response = await fetch("/api/replicate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt: search,
+          }),
+        });
+        let prediction = await response.json();
+        if (response.status !== 201) {
+          setError(prediction.detail);
+          return;
+        }
+        setPrediction(prediction);
+
+        while (
+          prediction.status !== "succeeded" &&
+          prediction.status !== "failed"
+        ) {
+          await sleep(1000);
+          const response = await fetch("/api/replicate/" + prediction.id);
+          prediction = await response.json();
+          if (response.status !== 200) {
+            setError(prediction.detail);
+            return;
+          }
+          console.log({ prediction });
+          setPrediction(prediction);
+        }
         setIsLoading(false);
       }
     };
@@ -54,7 +113,10 @@ export default function Home() {
   const handleDownloadCardOutside = async () => {
     const element = outsideRef.current;
     // @ts-ignore
-    const canvas = await html2canvas(element);
+    const canvas = await html2canvas(element, {
+      allowTaint: true,
+      useCORS: true,
+    });
 
     const data = canvas.toDataURL("image/jpg");
     const link = document.createElement("a");
@@ -183,68 +245,83 @@ export default function Home() {
             >
               <div className="flex flex-col justify-center">
                 <div className="mx-auto">
-                  {data.text ? (
-                    <>
-                      <div className="shadow-lg mb-2">
-                        <div
-                          //@ts-ignore
-                          ref={outsideRef}
-                        >
-                          <div className="w-[900px] h-[450px] bg-white  ">
-                            <div className="flex h-full">
-                              {" "}
-                              <p className="flex flex-1 text-center h-full justify-center items-center">
-                                Made with ♥
-                              </p>{" "}
-                              <div className="flex-1">
-                                <img src={result} />
-                              </div>
-                            </div>{" "}
-                          </div>
+                  <>
+                    <div className="shadow-lg mb-2">
+                      <div
+                        //@ts-ignore
+                        ref={outsideRef}
+                      >
+                        <div className="w-[900px] h-[450px] bg-white  ">
+                          <div className="flex h-full">
+                            {" "}
+                            <p className="flex flex-1 text-center h-full justify-center items-center">
+                              Made with ♥
+                            </p>{" "}
+                            <div className="flex-1">
+                              {/* <img
+                                  src={imageState ? imageState : "/foundry.jpg"}
+                                /> */}
+                              {/* <img src={result} /> */}
+
+                              {prediction ? (
+                                <div>
+                                  {/* @ts-ignore */}
+                                  {prediction.output && (
+                                    <div>
+                                      {/* @ts-ignore */}
+                                      <img
+                                        src={
+                                          prediction.output[
+                                            prediction.output.length - 1
+                                          ]
+                                        }
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <img src="https://replicate.delivery/pbxt/LpvJ0TuN6CKOBFpMGnEvQiCqrJfspjdvLjfHqTMwMl0mnPRQA/out-0.png" />
+                              )}
+                            </div>
+                          </div>{" "}
                         </div>
                       </div>
-                      <div className="w-full flex justify-center">
-                        <button
-                          className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-6 "
-                          type="button"
-                          onClick={handleDownloadCardOutside}
-                        >
-                          Download
-                        </button>
-                      </div>
-                      <div className="shadow-lg mb-2">
-                        <div
-                          //@ts-ignore
-                          ref={insideRef}
-                        >
-                          <div className="w-[900px] h-[450px] bg-white">
-                            <div className="flex h-full">
-                              {" "}
-                              <div className="flex-1"></div>
-                              <p className="flex flex-1 text-center h-full justify-center items-center mx-12">
-                                {data.text}
-                              </p>{" "}
-                            </div>{" "}
-                          </div>
+                    </div>
+                    <div className="w-full flex justify-center">
+                      <button
+                        className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-6 "
+                        type="button"
+                        onClick={handleDownloadCardOutside}
+                      >
+                        Download
+                      </button>
+                    </div>
+                    <div className="shadow-lg mb-2">
+                      <div
+                        //@ts-ignore
+                        ref={insideRef}
+                      >
+                        <div className="w-[900px] h-[450px] bg-white">
+                          <div className="flex h-full">
+                            {" "}
+                            <div className="flex-1"></div>
+                            <p className="flex flex-1 text-center h-full justify-center items-center mx-12">
+                              {data.text}
+                            </p>{" "}
+                          </div>{" "}
                         </div>
                       </div>
-                      <div className="w-full flex justify-center">
-                        <button
-                          className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-6 "
-                          type="button"
-                          onClick={handleDownloadCardInside}
-                        >
-                          Download
-                        </button>
-                      </div>
-                    </>
-                  ) : isLoading ? (
-                    <SkeletonTheme baseColor="#3b82f6" highlightColor="#2dd4bf">
-                      <Skeleton height="506px" width="900px" />
-                    </SkeletonTheme>
-                  ) : (
-                    <img src="/foundry.jpg" alt="Hero" />
-                  )}
+                    </div>
+                    <div className="w-full flex justify-center">
+                      <button
+                        className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-6 "
+                        type="button"
+                        onClick={handleDownloadCardInside}
+                      >
+                        Download
+                      </button>
+                    </div>
+                  </>
                 </div>
               </div>
             </div>

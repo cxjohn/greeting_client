@@ -206,11 +206,17 @@ export default function Home() {
                                 borderRadius={0}
                               />
                             </SkeletonTheme>
-                          ) : imagePrediction && imagePrediction.output ? (
+                          ) : //@ts-ignore
+
+                          imagePrediction && imagePrediction.output ? (
                             <div>
                               <img
                                 src={
+                                  //@ts-ignore
+
                                   imagePrediction.output[
+                                    //@ts-ignore
+
                                     imagePrediction.output.length - 1
                                   ]
                                 }

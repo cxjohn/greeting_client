@@ -174,8 +174,8 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="max-w-[900px] mx-auto">
-              <div className="overflow-auto">
+            <div className="relative max-w-[900px] mx-auto">
+              <div className="overflow-auto lg:overflow-visible">
                 <div className="sm:hidden mb-8">
                   Scroll left and right to see the full card!
                 </div>
@@ -183,52 +183,49 @@ export default function Home() {
                   <span>Outer Rear</span>
                   <span>Outer Front</span>
                 </div>
-                <div className="shadow-lg mb-2">
+                <div className="lg:shadow-lg mb-2">
                   <div
                     //@ts-ignore
                     ref={outsideRef}
                   >
-                    <div className="w-[900px] h-[450px]">
-                      <div className="flex h-full">
-                        {" "}
-                        <p className="flex w-1/2 text-center h-full justify-center items-center">
-                          Made with ♥
-                        </p>{" "}
-                        <div className="w-1/2 leading-none">
-                          {isImageLoading ? (
-                            <SkeletonTheme
-                              baseColor="#3b82f6"
-                              highlightColor="#2dd4bf"
-                            >
-                              <Skeleton
-                                height="450px"
-                                width="450px"
-                                borderRadius={0}
-                              />
-                            </SkeletonTheme>
-                          ) : //@ts-ignore
+                    <div className="w-[900px] h-[450px] flex border lg:border-none">
+                      <p className="flex w-1/2 text-center h-full justify-center items-center">
+                        Made with ♥
+                      </p>{" "}
+                      <div className="w-1/2 leading-none">
+                        {isImageLoading ? (
+                          <SkeletonTheme
+                            baseColor="#3b82f6"
+                            highlightColor="#2dd4bf"
+                          >
+                            <Skeleton
+                              height="450px"
+                              width="450px"
+                              borderRadius={0}
+                            />
+                          </SkeletonTheme>
+                        ) : //@ts-ignore
 
-                          imagePrediction && imagePrediction.output ? (
-                            <div>
-                              <img
-                                src={
+                        imagePrediction && imagePrediction.output ? (
+                          <div>
+                            <img
+                              src={
+                                //@ts-ignore
+
+                                imagePrediction.output[
                                   //@ts-ignore
 
-                                  imagePrediction.output[
-                                    //@ts-ignore
-
-                                    imagePrediction.output.length - 1
-                                  ]
-                                }
-                              />
-                            </div>
-                          ) : (
-                            <img
-                              src="https://replicate.delivery/pbxt/LpvJ0TuN6CKOBFpMGnEvQiCqrJfspjdvLjfHqTMwMl0mnPRQA/out-0.png"
-                              alt="AI generated Monet-style painting of lillies"
+                                  imagePrediction.output.length - 1
+                                ]
+                              }
                             />
-                          )}
-                        </div>
+                          </div>
+                        ) : (
+                          <img
+                            src="https://replicate.delivery/pbxt/LpvJ0TuN6CKOBFpMGnEvQiCqrJfspjdvLjfHqTMwMl0mnPRQA/out-0.png"
+                            alt="AI generated Monet-style painting of lillies"
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -250,43 +247,40 @@ export default function Home() {
                   Regenerate Image
                 </button>
               </div>
-              <div className="overflow-auto">
+              <div className="overflow-auto lg:overflow-visible">
                 <div className="w-[900px] flex justify-around text-sm text-gray-600 italic">
                   <span>Inside Front</span>
                   <span>Inside Back</span>
                 </div>
-                <div className="shadow-lg mb-2">
+                <div className="lg:shadow-lg mb-2">
                   <div
                     //@ts-ignore
                     ref={insideRef}
                   >
-                    <div className="w-[900px] h-[450px] bg-white">
-                      <div className="flex h-full">
-                        {" "}
-                        <div className="w-1/2 border border-y-0 border-l-0 border-dashed"></div>
-                        <div className="w-1/2 flex flex-col text-center h-full justify-around items-center px-12 border border-y-0 border-r-0 border-dashed ">
-                          <div>
-                            {isTextLoading ? (
-                              <SkeletonTheme
-                                baseColor="#3b82f6"
-                                highlightColor="#2dd4bf"
-                              >
-                                <Skeleton height="96px" width="402px" />
-                              </SkeletonTheme>
-                            ) : data.text ? (
-                              <p>{data.text}</p>
-                            ) : (
-                              <p>
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Ut
-                                enim ad minim veniam, quis nostrud
-                              </p>
-                            )}
-                          </div>
-                          <p></p>
-                        </div>{" "}
-                      </div>{" "}
+                    <div className="w-[900px] h-[450px] bg-white flex border lg:border-none">
+                      <div className="w-1/2 border border-y-0 border-l-0 border-dashed"></div>
+                      <div className="w-1/2 flex flex-col text-center h-full justify-around items-center px-12 border border-y-0 border-r-0 border-dashed ">
+                        <div>
+                          {isTextLoading ? (
+                            <SkeletonTheme
+                              baseColor="#3b82f6"
+                              highlightColor="#2dd4bf"
+                            >
+                              <Skeleton height="96px" width="402px" />
+                            </SkeletonTheme>
+                          ) : data.text ? (
+                            <p>{data.text}</p>
+                          ) : (
+                            <p>
+                              Lorem ipsum dolor sit amet, consectetur adipiscing
+                              elit, sed do eiusmod tempor incididunt ut labore
+                              et dolore magna aliqua. Ut enim ad minim veniam,
+                              quis nostrud
+                            </p>
+                          )}
+                        </div>
+                        <p></p>
+                      </div>
                     </div>
                   </div>
                 </div>

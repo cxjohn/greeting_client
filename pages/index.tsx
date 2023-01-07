@@ -20,41 +20,43 @@ export default function Home() {
     fetchTextData();
   };
   const fetchImageData = async () => {
-    setIsImageLoading(true);
+    if (query) {
+      setIsImageLoading(true);
 
-    const sleep = (ms: any) => new Promise((r) => setTimeout(r, ms));
-    const response = await fetch("/api/replicate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: query,
-      }),
-    });
-    let prediction = await response.json();
-    if (response.status !== 201) {
-      setError(prediction.detail);
-      return;
-    }
-    setImagePrediction(prediction);
-
-    while (
-      prediction.status !== "succeeded" &&
-      prediction.status !== "failed"
-    ) {
-      await sleep(1000);
-      const response = await fetch("/api/replicate/" + prediction.id);
-      prediction = await response.json();
-      if (response.status !== 200) {
+      const sleep = (ms: any) => new Promise((r) => setTimeout(r, ms));
+      const response = await fetch("/api/replicate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: query,
+        }),
+      });
+      let prediction = await response.json();
+      if (response.status !== 201) {
         setError(prediction.detail);
         return;
       }
-      console.log({ prediction });
       setImagePrediction(prediction);
-    }
-    if (prediction.status === "succeeded" || prediction.status === "failed") {
-      setIsImageLoading(false);
+
+      while (
+        prediction.status !== "succeeded" &&
+        prediction.status !== "failed"
+      ) {
+        await sleep(1000);
+        const response = await fetch("/api/replicate/" + prediction.id);
+        prediction = await response.json();
+        if (response.status !== 200) {
+          setError(prediction.detail);
+          return;
+        }
+        console.log({ prediction });
+        setImagePrediction(prediction);
+      }
+      if (prediction.status === "succeeded" || prediction.status === "failed") {
+        setIsImageLoading(false);
+      }
     }
   };
   const fetchTextData = async () => {

@@ -283,6 +283,7 @@ export default function Home() {
                           ) : editedText ? (
                             edit ? (
                               <textarea
+                                className="w-[353px] h-[96px]"
                                 value={editedText}
                                 onChange={handleTextChange}
                               ></textarea>
@@ -290,12 +291,14 @@ export default function Home() {
                               <p>{editedText}</p>
                             )
                           ) : edit ? (
-                            <textarea>
-                              Lorem ipsum dolor sit amet, consectetur adipiscing
-                              elit, sed do eiusmod tempor incididunt ut labore
-                              et dolore magna aliqua. Ut enim ad minim veniam,
-                              quis nostrud
-                            </textarea>
+                            <textarea
+                              className="w-[353px] h-[96px]"
+                              value={
+                                editedText ||
+                                " Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud"
+                              }
+                              onChange={handleTextChange}
+                            ></textarea>
                           ) : (
                             <p>
                               Lorem ipsum dolor sit amet, consectetur adipiscing

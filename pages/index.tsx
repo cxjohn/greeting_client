@@ -14,6 +14,8 @@ export default function Home() {
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [imagePrediction, setImagePrediction] = useState(null);
   const [error, setError] = useState(null);
+  const [edit, setEdit] = useState(false);
+  const [editedText, setEditedText] = useState("");
 
   const createCard = () => {
     fetchImageData();
@@ -73,6 +75,7 @@ export default function Home() {
       });
       const data = await res.json();
       setData(data);
+      setEditedText(data.text);
       setIsTextLoading(false);
     }
   };
@@ -99,6 +102,10 @@ export default function Home() {
     } else {
       window.open(data);
     }
+  };
+
+  const handleTextChange = (event: any) => {
+    setEditedText(event.target.value);
   };
 
   return (
@@ -167,8 +174,9 @@ export default function Home() {
                   />
 
                   <button
-                    className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out  px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto sm:ml-4"
+                    className="font-medium inline-flex items-center justify-center border-2 border-gray-900 rounded leading-snug transition duration-150 ease-in-out  px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto sm:ml-4"
                     onClick={() => createCard()}
+                    disabled={isTextLoading || isImageLoading}
                   >
                     Create
                   </button>
@@ -211,6 +219,7 @@ export default function Home() {
                         imagePrediction && imagePrediction.output ? (
                           <div>
                             <img
+                              className="pointer-events-none"
                               src={
                                 //@ts-ignore
 
@@ -224,6 +233,7 @@ export default function Home() {
                           </div>
                         ) : (
                           <img
+                            className="pointer-events-none"
                             src="https://replicate.delivery/pbxt/LpvJ0TuN6CKOBFpMGnEvQiCqrJfspjdvLjfHqTMwMl0mnPRQA/out-0.png"
                             alt="AI generated Monet-style painting of lillies"
                           />
@@ -235,14 +245,14 @@ export default function Home() {
               </div>
               <div className="w-full flex flex-col-reverse sm:flex-row sm:justify-between">
                 <button
-                  className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-6"
+                  className="font-medium inline-flex items-center justify-center border-2 border-gray-900 rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-6"
                   type="button"
                   onClick={() => downloadCard("outside")}
                 >
                   Download
                 </button>
                 <button
-                  className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-2 sm:mb-6"
+                  className="font-medium inline-flex items-center justify-center border-2 border-gray-900 rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-2 sm:mb-6"
                   type="button"
                   onClick={() => fetchImageData()}
                 >
@@ -270,8 +280,22 @@ export default function Home() {
                             >
                               <Skeleton height="96px" width="402px" />
                             </SkeletonTheme>
-                          ) : data.text ? (
-                            <p>{data.text}</p>
+                          ) : editedText ? (
+                            edit ? (
+                              <textarea
+                                value={editedText}
+                                onChange={handleTextChange}
+                              ></textarea>
+                            ) : (
+                              <p>{editedText}</p>
+                            )
+                          ) : edit ? (
+                            <textarea>
+                              Lorem ipsum dolor sit amet, consectetur adipiscing
+                              elit, sed do eiusmod tempor incididunt ut labore
+                              et dolore magna aliqua. Ut enim ad minim veniam,
+                              quis nostrud
+                            </textarea>
                           ) : (
                             <p>
                               Lorem ipsum dolor sit amet, consectetur adipiscing
@@ -289,19 +313,28 @@ export default function Home() {
               </div>
               <div className="w-full flex flex-col-reverse sm:flex-row sm:justify-between">
                 <button
-                  className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-6"
+                  className="font-medium inline-flex items-center justify-center border-2 border-gray-900 rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-6"
                   type="button"
                   onClick={() => downloadCard("inside")}
                 >
                   Download
                 </button>
-                <button
-                  className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-2 sm:mb-6"
-                  type="button"
-                  onClick={() => fetchTextData()}
-                >
-                  Regenerate Text
-                </button>
+                <div>
+                  <button
+                    className="font-medium inline-flex items-center justify-center border-2 border-gray-900 rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-gray-900 bg-white hover:bg-gray-100 w-full sm:w-auto mb-2 sm:mb-6 sm:mr-2"
+                    type="button"
+                    onClick={() => setEdit((prev) => !prev)}
+                  >
+                    {edit ? "Set Text" : "Edit Text"}
+                  </button>
+                  <button
+                    className="font-medium inline-flex items-center justify-center border-2 border-gray-900 rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full sm:w-auto mb-2 sm:mb-6"
+                    type="button"
+                    onClick={() => fetchTextData()}
+                  >
+                    Regenerate Text
+                  </button>
+                </div>
               </div>
             </div>
           </div>
